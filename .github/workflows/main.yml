@@ -3,7 +3,7 @@ name: CI/CD Java App to VPS
 on:
   push:
     branches:
-      - master  # Chạy khi bạn push code vào nhánh masterrr
+      - master  # Chạy khi bạn push code vào nhánh masterrrr
 
 jobs:
   build-and-push:
