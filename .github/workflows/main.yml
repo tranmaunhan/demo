@@ -2,7 +2,7 @@ name: CI/CD Java App
 
 on:
   push:
-    branches: [ "main" ] # Chạy khi push vào branch main
+    branches: [ "main","master" ] # Chạy khi push vào branch main
 
 jobs:
   build-and-deploy:
