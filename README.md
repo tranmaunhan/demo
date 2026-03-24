@@ -1,49 +1,62 @@
-# Demo Spring Boot Docker
+﻿# Demo Spring Boot Docker & CI/CD
 
-Má»¥c tiÃªu cá»§a project nÃ y lÃ  há»c Docker vÃ  CI/CD vá»›i GitHub Actions. á»¨ng dá»¥ng Spring Boot cÃ³ má»™t endpoint Ä‘Æ¡n giáº£n:
+## Tổng quan
+Đây là dự án Spring Boot tối giản để thực hành Docker và CI/CD với GitHub Actions. Ứng dụng cung cấp 2 endpoint đơn giản.
 
-- `GET /hello` tráº£ vá» `helloworld`
+## API
+- `GET /hello` -> `hello everyonee`
+- `GET /haha` -> `hello everyonee`
 
-## YÃªu Cáº§u
+## Yêu cầu
+- Java 21 (nếu chạy local)
+- Docker (nếu build/chạy container)
 
-- Docker Ä‘Ã£ Ä‘Æ°á»£c cÃ i Ä‘áº·t
-
-## Build Image
-
+## Chạy local (Maven Wrapper)
 ```bash
-docker build -t demo .
+# Mac/Linux
+./mvnw spring-boot:run
+
+# Windows PowerShell
+.\mvnw.cmd spring-boot:run
 ```
 
-## Cháº¡y á»¨ng Dá»¥ng
-
-```bash
-docker run --rm -p 8080:8080 demo
-```
-
-## Kiá»ƒm Tra Endpoint
-
+Kiểm tra nhanh:
 ```bash
 curl http://localhost:8080/hello
 ```
 
-## CI/CD với GitHub Actions
+## Build JAR
+```bash
+./mvnw clean package
+java -jar target/*.jar
+```
 
-Workflow đã được tạo sẵn: `.github/workflows/ci-cd.yml`
+## Docker
+```bash
+docker build -t demo-java-app .
+docker run --rm -p 8080:8080 demo-java-app
+```
 
-- CI: Chạy test (`./mvnw test`) cho mọi pull request và push.
-- CD: Khi push lên nhánh `main`, workflow sẽ build và đẩy Docker image lên GitHub Container Registry (GHCR).
+## CI/CD (GitHub Actions)
+Workflow: `.github/workflows/main.yml`
 
-Image sẽ có dạng:
+- Trigger: push lên nhánh `master`
+- Job `test`: `./mvnw clean verify -B`
+- Job `build-and-push`: build và đẩy image lên Docker Hub
+- Job `deploy`: SSH vào VPS, kéo image mới, restart container
 
-- `ghcr.io/<owner>/<repo>:latest`
-- `ghcr.io/<owner>/<repo>:sha-<short>` (tag theo commit)
+Secrets cần có:
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+- `SERVER_HOST`
+- `SSH_PRIVATE_KEY`
 
-Lưu ý:
+Image được đẩy lên Docker Hub:
+- `<DOCKERHUB_USERNAME>/demo-java-app:latest`
 
-- Nếu nhánh chính không phải `main`, hãy đổi trong workflow.
-- Vào `Settings` -> `Actions` -> `General` -> bật `Workflow permissions` là "Read and write" để GHCR nhận image.
+Nếu nhánh chính không phải `master`, hãy sửa lại trong workflow.
 
-## Ghi ChÃº
-
-- Dockerfile dÃ¹ng multi-stage build Ä‘á»ƒ giáº£m kÃ­ch thÆ°á»›c image.
-- Java runtime lÃ  `eclipse-temurin:21-jre`.
+## Ghi chú
+- Dockerfile dùng multi-stage build (Maven builder + JRE runtime).
+- Tên ứng dụng được đặt trong `src/main/resources/application.properties`.
+- Đã khai báo dependency Actuator; nếu muốn mở thêm endpoints, hãy cấu hình `management.endpoints.web.exposure.include`.
