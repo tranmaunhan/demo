@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+﻿# Demo Spring Boot Docker & CI/CD
+=======
 # Demo Spring Boot Docker & CI/CD
+>>>>>>> cb76211944e337f35064adf9caaa43f50ba17c88
 
 ## Tổng quan
 Đây là dự án Spring Boot tối giản để thực hành Docker và CI/CD với GitHub Actions. Ứng dụng cung cấp 2 endpoint đơn giản.
